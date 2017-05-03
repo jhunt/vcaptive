@@ -77,6 +77,13 @@ func main() {
 }
 ```
 
+If you don't have tags, you can also retrieve the first service
+that has a given set of credentials:
+
+```
+inst, found := services.WithCredentials("smtp_host", "smtp_username")
+```
+
 Resources
 ---------
 

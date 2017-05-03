@@ -181,4 +181,56 @@ func TestVCAPtive(t *testing.T) {
 		t.Fatalf("[%s] test service should not have returned anything for the 'ssl.ciphers.ONE' cred, but did: '%s'", topic, v)
 	}
 
+
+	topic = "credentials-based"
+	ss, err = vcaptive.Parse(`
+{
+  "x": [
+    {
+      "name": "vmail-120",
+      "label": "vmail",
+      "tags": [],
+      "plan": "miniscule",
+      "credentials": {
+        "smtp_host"     : "127.0.0.1",
+        "smtp_port"     : "587",
+        "smtp_username" : "email",
+        "smtp_password" : "secret"
+      }
+    }
+  ]
+}
+`)
+	if err != nil {
+		t.Fatal("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
+	}
+
+	_, ok = ss.WithCredentials("www_foo")
+	if ok {
+		t.Errorf("[%s] found a service with appropriate credentials when there shouldn't be one!", topic)
+	}
+
+	inst, ok = ss.WithCredentials("smtp_host", "smtp_port", "smtp_username", "smtp_password")
+	if !ok {
+		t.Errorf("[%s] did not find the SMTP service", topic)
+	}
+
+	if inst.Label != "vmail" {
+		t.Errorf("[%s] SMTP service should be labelled 'vmail', but was instead '%s'", topic, inst.Label)
+	}
+	if inst.Plan != "miniscule" {
+		t.Errorf("[%s] SMTP service should be of plan 'miniscule', but was instead '%s'", topic, inst.Plan)
+	}
+
+	v, ok = inst.Get("web")
+	if ok {
+		t.Errorf("[%s] SMTP service should not have returned anything for the 'web' cred, but did: '%v'", topic, v)
+	}
+	v, ok = inst.Get("smtp_host")
+	if !ok {
+		t.Fatalf("[%s] SMTP service should have returned a value for the 'smtp_host' cred, but did not", topic)
+	}
+	if v != "127.0.0.1" {
+		t.Errorf("[%s] postgres service returned the wrong value for the 'smtp_host' cred: '%s'", topic, v)
+	}
 }

@@ -38,6 +38,24 @@ func (ss Services) Tagged(tags ...string) (Instance, bool) {
 	return Instance{}, false
 }
 
+func (ss Services) WithCredentials(keys ...string) (Instance, bool) {
+	for _, list := range ss {
+		for _, svc := range list {
+			found := true
+			for _, want := range keys {
+				if _, ok := svc.Get(want); !ok {
+					found = false
+					break
+				}
+			}
+			if found {
+				return svc, true
+			}
+		}
+	}
+	return Instance{}, false
+}
+
 func (inst Instance) Get(key string) (interface{}, bool) {
 	var o interface{}
 
