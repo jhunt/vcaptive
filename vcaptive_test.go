@@ -6,7 +6,101 @@ import (
 	"github.com/jhunt/vcaptive"
 )
 
-func TestVCAPtive(t *testing.T) {
+func TestApplication(t *testing.T) {
+	var (
+		topic string
+		err error
+		app vcaptive.Application
+	)
+
+	topic = "docs.cloudfoundry.org"
+	app, err = vcaptive.ParseApplication(`
+{
+  "instance_id": "fe98dc76ba549876543210abcd1234",
+  "instance_index": 0,
+  "host": "0.0.0.0",
+  "port": 61857,
+  "started_at": "2013-08-12 00:05:29 +0000",
+  "started_at_timestamp": 1376265929,
+  "start": "2013-08-12 00:05:29 +0000",
+  "state_timestamp": 1376265929,
+  "limits": {
+    "mem": 512,
+    "disk": 1024,
+    "fds": 16384
+  },
+  "application_version": "ab12cd34-5678-abcd-0123-abcdef987654",
+  "application_name": "styx-james",
+  "application_uris": [
+    "my-app.example.com"
+  ],
+  "version": "ab12cd34-5678-abcd-0123-abcdef987654",
+  "name": "my-app",
+  "uris": [
+    "my-app.example.com"
+  ],
+  "users": null
+}
+`)
+	if err != nil {
+		t.Fatalf("[%s] failed to parse VCAP_APPLICATION: %s", topic, err)
+	}
+	if app.Name != "styx-james" {
+		t.Errorf("[%s] expected name to be 'styx-james', but got '%s'", topic, app.Name)
+	}
+	if app.Version != "ab12cd34-5678-abcd-0123-abcdef987654" {
+		t.Errorf("[%s] unexpected version '%s'", topic, app.Version)
+	}
+	if len(app.URIs) != 1 {
+		t.Fatalf("[%s] unexpected number of URIs; expected %d but got %d", topic, 1, len(app.URIs))
+	}
+	if app.URIs[0] != "my-app.example.com" {
+		t.Errorf("[%s] unexpected uri[0] '%s'", topic, app.URIs[0])
+	}
+
+	topic = "live example"
+	app, err = vcaptive.ParseApplication(`
+{
+  "application_id": "e233016d-3bce-4e1e-9269-b1ad1555cf99",
+  "application_name": "my-test-app",
+  "application_uris": [
+   "my-test-app.cfapps.io"
+  ],
+  "application_version": "35c179da-ae9a-4cb6-b787-98261b3bb183",
+  "cf_api": "https://api.cfapps.io",
+  "limits": {
+   "disk": 1024,
+   "fds": 16384,
+   "mem": 1024
+  },
+  "name": "my-test-app",
+  "space_id": "1afffefc-6318-4b72-8383-7bac3fdc6ec6",
+  "space_name": "stark-and-wayne",
+  "uris": [
+   "my-test-app.cfapps.io"
+  ],
+  "users": null,
+  "version": "35c179da-ae9a-4cb6-b787-98261b3bb183"
+}
+`)
+	if err != nil {
+		t.Fatal("[%s] failed to parse VCAP_APPLICATION: %s", topic, err)
+	}
+	if app.Name != "my-test-app" {
+		t.Errorf("[%s] expected name to be 'styx-james', but got '%s'", topic, app.Name)
+	}
+	if app.Version != "35c179da-ae9a-4cb6-b787-98261b3bb183" {
+		t.Errorf("[%s] unexpected version '%s'", topic, app.Version)
+	}
+	if len(app.URIs) != 1 {
+		t.Fatalf("[%s] unexpected number of URIs; expected %d but got %d", topic, 1, len(app.URIs))
+	}
+	if app.URIs[0] != "my-test-app.cfapps.io" {
+		t.Errorf("[%s] unexpected uri[0] '%s'", topic, app.URIs[0])
+	}
+}
+
+func TestServices(t *testing.T) {
 	var (
 		topic string
 		err   error
@@ -18,7 +112,7 @@ func TestVCAPtive(t *testing.T) {
 	)
 
 	topic = "docs.cloudfoundry.org"
-	ss, err = vcaptive.Parse(`
+	ss, err = vcaptive.ParseServices(`
 {
   "elephantsql": [
     {
@@ -96,7 +190,7 @@ func TestVCAPtive(t *testing.T) {
 
 
 	topic = "multi-level credentials"
-	ss, err = vcaptive.Parse(`
+	ss, err = vcaptive.ParseServices(`
 {
   "x": [
     {
@@ -183,7 +277,7 @@ func TestVCAPtive(t *testing.T) {
 
 
 	topic = "credentials-based"
-	ss, err = vcaptive.Parse(`
+	ss, err = vcaptive.ParseServices(`
 {
   "x": [
     {

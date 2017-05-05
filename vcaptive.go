@@ -2,9 +2,16 @@ package vcaptive
 
 import (
 	"encoding/json"
-	"strings"
 	"strconv"
+	"strings"
 )
+
+type Application struct {
+	ID      string   `json:"application_id"`
+	Name    string   `json:"application_name"`
+	Version string   `json:"application_version"`
+	URIs    []string `json:"application_uris"`
+}
 
 type Services map[string][]Instance
 
@@ -18,9 +25,14 @@ type Instance struct {
 
 type Credentials map[string]interface{}
 
-func Parse(s string) (Services, error) {
+func ParseServices(s string) (Services, error) {
 	var ss Services
 	return ss, json.Unmarshal([]byte(s), &ss)
+}
+
+func ParseApplication(s string) (Application, error) {
+	var a Application
+	return a, json.Unmarshal([]byte(s), &a)
 }
 
 func (ss Services) Tagged(tags ...string) (Instance, bool) {

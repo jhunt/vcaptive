@@ -2,9 +2,72 @@ vcaptive
 ========
 
 `vcaptive` is a small Go library for consuming Cloud Foundry
-`$VCAP_SERVICES`-style service and credential definitions.
+`$VCAP_SERVICES`-style service and credential definitions, and
+the `$VCAP_APPLICATION` environment variable for introspection
+of things like URLs and application versions.
 
-It takes this:
+$VCAP\_APPLICATION
+------------------
+
+You can parse the `$VCAP_APPLICATION` environment variable to
+retrieve information about your bound routes / URIs, version IDs,
+application names, and more:
+
+`vcaptive` takes this:
+
+```
+{
+  "application_id": "e233016d-3bce-4e1e-9269-b1ad1555cf99",
+  "application_name": "my-test-app",
+  "application_uris": [
+   "my-test-app.cfapps.io"
+  ],
+  "application_version": "35c179da-ae9a-4cb6-b787-98261b3bb183",
+  "cf_api": "https://api.cfapps.io",
+  "limits": {
+   "disk": 1024,
+   "fds": 16384,
+   "mem": 1024
+  },
+  "name": "my-test-app",
+  "space_id": "1afffefc-6318-4b72-8383-7bac3fdc6ec6",
+  "space_name": "stark-and-wayne",
+  "uris": [
+   "my-test-app.cfapps.io"
+  ],
+  "users": null,
+  "version": "35c179da-ae9a-4cb6-b787-98261b3bb183"
+}
+```
+
+And lets you do this:
+
+```
+package main
+
+import (
+  "fmt"
+  "os"
+
+  "github.com/jhunt/vcaptive"
+)
+
+func main() {
+  app, err := vcaptive.ParseApplication(os.Getenv("VCAP_APPLICATION"))
+  if err != nil {
+    fmt.Fprintf(os.Stderr, "VCAP_APPLICATION%s\n", err)
+    os.Exit(1)
+  }
+
+  fmt.Printf("running v%s of %s at http://%s\n", app.Version, app.Name, app.URIs[0])
+  // ...
+}
+```
+
+$VCAP\_SERVICES
+---------------
+
+To handle services, `vcaptive` takes this:
 
 ```
 {
@@ -54,7 +117,7 @@ import (
 )
 
 func main() {
-  services, err := vcaptive.Parse(os.Getenv("VCAP_SERVICES"))
+  services, err := vcaptive.ParseServices(os.Getenv("VCAP_SERVICES"))
   if err != nil {
     fmt.Fprintf(os.Stderr, "VCAP_SERVICES: %s\n", err)
     os.Exit(1)
