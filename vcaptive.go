@@ -16,11 +16,13 @@ type Application struct {
 type Services map[string][]Instance
 
 type Instance struct {
-	Name        string      `json:"name"`
-	Label       string      `json:"label"`
-	Tags        []string    `json:"tags"`
-	Plan        string      `json:"plan"`
-	Credentials Credentials `json:"credentials"`
+	Name           string      `json:"name"`
+	Label          string      `json:"label"`
+	Tags           []string    `json:"tags"`
+	Plan           string      `json:"plan"`
+	Credentials    Credentials `json:"credentials"`
+	Provider       interface{} `json:"provider"`
+	SyslogDrainURL interface{} `json:"syslog_drain_url"`
 }
 
 type Credentials map[string]interface{}
