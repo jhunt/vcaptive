@@ -2,6 +2,7 @@ package vcaptive
 
 import (
 	"encoding/json"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -27,7 +28,18 @@ type Instance struct {
 
 type Credentials map[string]interface{}
 
-func ParseServices(s string) (Services, error) {
+func ParseServices(interf interface{}) (Services, error) {
+	var s string
+	switch interf.(type) {
+	case string:
+		s = interf.(string)
+	default:
+		tem, err := json.Marshal(interf)
+		if err != nil {
+			os.Exit(1)
+		}
+		s = string(tem)
+	}
 	var ss Services
 	return ss, json.Unmarshal([]byte(s), &ss)
 }
