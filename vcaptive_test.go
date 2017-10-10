@@ -125,7 +125,8 @@ func TestServices(t *testing.T) {
       ],
       "plan": "turtle",
       "credentials": {
-        "uri": "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser"
+        "uri": "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser",
+        "port": 5432
       }
     }
   ],
@@ -180,12 +181,36 @@ func TestServices(t *testing.T) {
 	if ok {
 		t.Errorf("[%s] postgres service should not have returned anything for the 'foo' cred, but did: '%v'", topic, v)
 	}
+	v, ok = inst.GetString("foo")
+	if ok {
+		t.Errorf("[%s] postgres service should not have returned anything for the 'foo' cred, but did: '%v'", topic, v)
+	}
+
 	v, ok = inst.Get("uri")
 	if !ok {
 		t.Fatalf("[%s] postgres service should have returned a value for the 'uri' cred, but did not", topic)
 	}
 	if v != "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser" {
 		t.Errorf("[%s] postgres service returned the wrong value for the 'uri' cred: '%s'", topic, v)
+	}
+	v, ok = inst.GetString("uri")
+	if !ok {
+		t.Fatalf("[%s] postgres service should have returned a value for the 'uri' cred, but did not", topic)
+	}
+	if v != "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser" {
+		t.Errorf("[%s] postgres service returned the wrong value for the 'uri' cred: '%s'", topic, v)
+	}
+
+	if v, ok = inst.GetUint("uri"); ok {
+		t.Errorf("[%s] postgres service should not have returned a number value for the 'uri' cred, but did: '%v'", topic, v)
+	}
+
+	v, ok = inst.GetUint("port")
+	if !ok {
+		t.Fatalf("[%s] postgres service should have returned a numeric value for the 'port' cred, but did not", topic)
+	}
+	if v != uint(5432) {
+		t.Errorf("[%s] postgres service returned the wrong value for the 'port' cred: '%d'", topic, v)
 	}
 
 

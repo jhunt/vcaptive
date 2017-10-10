@@ -120,3 +120,53 @@ func (inst Instance) Get(key string) (interface{}, bool) {
 
 	return o, true
 }
+
+func (inst Instance) GetString(key string) (string, bool) {
+	v, ok := inst.Get(key)
+	if !ok {
+		return "", false
+	}
+
+	switch v.(type) {
+	case string:
+		return v.(string), true
+	default:
+		return "", false
+	}
+}
+
+func (inst Instance) GetUint(key string) (uint, bool) {
+	v, ok := inst.Get(key)
+	if !ok {
+		return 0, false
+	}
+
+	switch v.(type) {
+	case int:
+		return uint(v.(int)), true
+	case int8:
+		return uint(v.(int8)), true
+	case int16:
+		return uint(v.(int16)), true
+	case int32:
+		return uint(v.(int32)), true
+	case int64:
+		return uint(v.(int64)), true
+	case uint:
+		return uint(v.(int)), true
+	case uint8:
+		return uint(v.(int8)), true
+	case uint16:
+		return uint(v.(int16)), true
+	case uint32:
+		return uint(v.(int32)), true
+	case uint64:
+		return uint(v.(int64)), true
+	case float32:
+		return uint(v.(float32)), true
+	case float64:
+		return uint(v.(float64)), true
+	default:
+		return 0, false
+	}
+}
