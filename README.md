@@ -82,7 +82,12 @@ To handle services, `vcaptive` takes this:
       ],
       "plan": "turtle",
       "credentials": {
-        "uri": "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser"
+        "uri": "postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser",
+        "user": "exampleuser",
+        "pass": "examplepass",
+        "host": "babar.elephantsql.com",
+        "port": 5432,
+        "db": "exampleuser"
       }
     }
   ],
@@ -129,13 +134,18 @@ func main() {
     os.Exit(2)
   }
 
-  uri, ok := instance.Get("uri")
+  host, ok := instance.GetString("host")
   if !ok {
-    fmt.Fprintf(os.Stderr, "VCAP_SERVICES: '%s' service has no 'uri' credential\n", instance.Label)
+    fmt.Fprintf(os.Stderr, "VCAP_SERVICES: '%s' service has no 'host' credential\n", instance.Label)
+    os.Exit(3)
+  }
+  port, ok := instance.GetUint("port")
+  if !ok {
+    fmt.Fprintf(os.Stderr, "VCAP_SERVICES: '%s' service has no 'port' credential\n", instance.Label)
     os.Exit(3)
   }
 
-  fmt.Printf("Connecting to %s...\n", uri)
+  fmt.Printf("Connecting to %s:%d...\n", host, port)
   // ...
 }
 ```
