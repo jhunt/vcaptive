@@ -84,7 +84,7 @@ func TestApplication(t *testing.T) {
 }
 `)
 	if err != nil {
-		t.Fatal("[%s] failed to parse VCAP_APPLICATION: %s", topic, err)
+		t.Fatalf("[%s] failed to parse VCAP_APPLICATION: %s", topic, err)
 	}
 	if app.Name != "my-test-app" {
 		t.Errorf("[%s] expected name to be 'styx-james', but got '%s'", topic, app.Name)
@@ -148,7 +148,7 @@ func TestServices(t *testing.T) {
 }
 `)
 	if err != nil {
-		t.Fatal("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
+		t.Fatalf("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
 	}
 
 	_, ok = ss.Tagged("xyzzy")
@@ -168,7 +168,7 @@ func TestServices(t *testing.T) {
 
 	inst, ok = ss.Tagged("postgres")
 	if !ok {
-		t.Fatal("[%s] did not find example 'postgres' service for instance testing", topic)
+		t.Fatalf("[%s] did not find example 'postgres' service for instance testing", topic)
 	}
 	if inst.Label != "elephantsql" {
 		t.Errorf("[%s] postgres service should be labelled 'elephantsql', but was instead '%s'", topic, inst.Label)
@@ -237,7 +237,7 @@ func TestServices(t *testing.T) {
 }
 `)
 	if err != nil {
-		t.Fatal("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
+		t.Fatalf("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
 	}
 
 	inst, ok = ss.Tagged("x")
@@ -321,7 +321,7 @@ func TestServices(t *testing.T) {
 }
 `)
 	if err != nil {
-		t.Fatal("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
+		t.Fatalf("[%s] failed to parse VCAP_SERVICES: %s", topic, err)
 	}
 
 	_, ok = ss.WithCredentials("www_foo")
