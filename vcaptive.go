@@ -2,6 +2,7 @@ package vcaptive
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -132,6 +133,19 @@ func (inst Instance) Get(key string) (interface{}, bool) {
 	}
 
 	return o, true
+}
+
+func (inst Instance) Sprintf(f string, names ...string) (string, bool) {
+	args := make([]interface{}, len(names))
+	for i := 0; i < len(names); i++ {
+		v, ok := inst.Get(names[i])
+		if !ok {
+			return "", false
+		}
+		args[i] = v
+	}
+
+	return fmt.Sprintf(f, args...), true
 }
 
 func (inst Instance) GetString(key string) (string, bool) {
